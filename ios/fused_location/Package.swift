@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "fused_location",
     platforms: [
-        .iOS("12.0")
+        .iOS("13.4")
     ],
     products: [
         .library(name: "fused-location", targets: ["fused_location"])
