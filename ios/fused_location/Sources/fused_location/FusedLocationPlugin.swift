@@ -77,24 +77,58 @@ public class FusedLocationPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
     private func notifySubscribers() {
         guard
             let eventSink,
-            let lastLocation = locationManager.location,
-            let lastHeading = locationManager.heading
+            let location = locationManager.location,
+            let heading = locationManager.heading
         else {
             return
         }
         
-        let dict = [
-            "positionLatitude": lastLocation.coordinate.latitude,
-            "positionLongitude": lastLocation.coordinate.longitude,
-            "positionAccuracy": lastLocation.horizontalAccuracy,
-            "elevationMeanSeaLevel": lastLocation.altitude,
-            "elevationMeanSeaLevelAccuracy": lastLocation.verticalAccuracy,
-            "headingDirection": lastHeading.trueHeading,
-            "headingAccuracy": lastHeading.headingAccuracy,
-            "courseDirection": lastLocation.course,
-            "courseAccuracy": lastLocation.courseAccuracy,
-            "speedMagnitude": lastLocation.speed,
-            "speedAccuracy": lastLocation.speedAccuracy
+        // position
+        let positionLatitude = location.coordinate.latitude
+        let positionLongitude = location.coordinate.longitude
+        let positionAccuracy = location.horizontalAccuracy
+        
+        // elevation
+        let elevationMeanSeaLevel = location.altitude
+        let elevationMeanSeaLevelAccuracy = location.verticalAccuracy
+        var elevationEllipsoidal = -1.0
+        var elevationEllipsoidalAccuracy = -1.0
+        if #available(iOS 15.0, *) {
+            elevationEllipsoidal = location.ellipsoidalAltitude
+            elevationEllipsoidalAccuracy = location.verticalAccuracy
+        }
+        
+        // course
+        var courseDirection = -1.0
+        var courseAccuracy = -1.0
+        if #available(iOS 13.4, *) {
+            courseDirection = location.course
+            courseAccuracy = location.courseAccuracy
+        }
+        
+        // speed
+        let speedMagnitude = location.speed
+        let speedAccuracy = location.speedAccuracy
+        
+        // heading
+        let headingDirection = heading.trueHeading
+        let headingAccuracy = heading.headingAccuracy
+        
+        
+        let dict: [String: Double] = [
+            "positionLatitude": positionLatitude,
+            "positionLongitude": positionLongitude,
+            "positionAccuracy": positionAccuracy,
+            "elevationMeanSeaLevel": elevationMeanSeaLevel,
+            "elevationMeanSeaLevelAccuracy": elevationMeanSeaLevelAccuracy,
+            "elevationEllipsoidal": elevationEllipsoidal,
+            "elevationEllipsoidalAccuracy": elevationEllipsoidalAccuracy,
+            "courseDirection": courseDirection,
+            "courseAccuracy": courseAccuracy,
+            "speedMagnitude": speedMagnitude,
+            "speedAccuracy": speedAccuracy,
+            "headingDirection": headingDirection,
+            "headingAccuracy": headingAccuracy
         ]
         
         eventSink(dict)

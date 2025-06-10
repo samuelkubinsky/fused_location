@@ -10,7 +10,9 @@ package dev.kubinsky.fused_location
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
+import android.os.Build
 import android.os.Looper
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.DeviceOrientation
 import com.google.android.gms.location.DeviceOrientationListener
@@ -30,7 +32,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import kotlin.Float
 import kotlin.math.abs
 
 class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
@@ -174,23 +175,85 @@ class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
 
   private fun notifySubscribers() {
     val eventSink = eventSink ?: return
-    val lastLocation = lastLocation ?: return
-    val lastOrientation = lastOrientation ?: return
+    val location = lastLocation ?: return
+    val orientation = lastOrientation ?: return
 
-    val dict = mapOf(
-      "positionLatitude" to lastLocation.latitude,
-      "positionLongitude" to lastLocation.longitude,
-      "positionAccuracy" to lastLocation.accuracy.toDouble(),
-      "elevationMeanSeaLevel" to lastLocation.altitude,
-      "elevationMeanSeaLevelAccuracy" to lastLocation.verticalAccuracyMeters.toDouble(),
-      "headingDirection" to lastOrientation.headingDegrees.toDouble(),
-      "headingAccuracy" to lastOrientation.headingErrorDegrees.toDouble(),
-      "courseDirection" to if (lastLocation.hasBearing()) lastLocation.bearing.toDouble() else -1.0,
-      "courseAccuracy" to if (lastLocation.hasBearingAccuracy()) lastLocation.bearingAccuracyDegrees.toDouble() else -1.0,
-      "speedMagnitude" to if (lastLocation.hasSpeed()) lastLocation.speed.toDouble() else -1.0,
-      "speedAccuracy" to if (lastLocation.hasSpeedAccuracy()) lastLocation.speedAccuracyMetersPerSecond.toDouble() else -1.0
+    // position
+    val positionLatitude = location.latitude
+    val positionLongitude = location.longitude
+    var positionAccuracy = -1.0
+    if (location.hasAccuracy()) {
+      positionAccuracy = location.accuracy.toDouble()
+    }
+
+    // elevation
+    var elevationMeanSeaLevel = -1.0
+    var elevationMeanSeaLevelAccuracy = -1.0
+    var elevationEllipsoidal = -1.0
+    var elevationEllipsoidalAccuracy = -1.0
+    if (isAtLeastU() && location.hasMslAltitude()) {
+      elevationMeanSeaLevel = location.mslAltitudeMeters
+    }
+    if (isAtLeastU() && location.hasMslAltitudeAccuracy()) {
+      elevationMeanSeaLevelAccuracy = location.mslAltitudeAccuracyMeters.toDouble()
+    }
+    if (location.hasAltitude()) {
+      elevationEllipsoidal = location.altitude
+    }
+    if (isAtLeastO() && location.hasVerticalAccuracy()) {
+      elevationEllipsoidalAccuracy = location.verticalAccuracyMeters.toDouble()
+    }
+
+    // course
+    var courseDirection = -1.0
+    var courseAccuracy = -1.0
+    if (location.hasBearing()) {
+      courseDirection = location.bearing.toDouble()
+    }
+    if (isAtLeastO() && location.hasBearingAccuracy()) {
+      courseAccuracy = location.bearingAccuracyDegrees.toDouble()
+    }
+
+    // speed
+    var speedMagnitude = -1.0
+    var speedAccuracy = -1.0
+    if (location.hasSpeed()) {
+      speedMagnitude = location.speed.toDouble()
+    }
+    if (isAtLeastO() && location.hasSpeedAccuracy()) {
+      speedAccuracy = location.speedAccuracyMetersPerSecond.toDouble()
+    }
+
+    // heading
+    val headingDirection = orientation.headingDegrees.toDouble()
+    val headingAccuracy = orientation.headingErrorDegrees.toDouble()
+
+    val map = mapOf<String, Double>(
+      "positionLatitude" to positionLatitude,
+      "positionLongitude" to positionLongitude,
+      "positionAccuracy" to positionAccuracy,
+      "elevationMeanSeaLevel" to elevationMeanSeaLevel,
+      "elevationMeanSeaLevelAccuracy" to elevationMeanSeaLevelAccuracy,
+      "elevationEllipsoidal" to elevationEllipsoidal,
+      "elevationEllipsoidalAccuracy" to elevationEllipsoidalAccuracy,
+      "courseDirection" to courseDirection,
+      "courseAccuracy" to courseAccuracy,
+      "speedMagnitude" to speedMagnitude,
+      "speedAccuracy" to speedAccuracy,
+      "headingDirection" to headingDirection,
+      "headingAccuracy" to headingAccuracy
     )
 
-    eventSink.success(dict)
+    eventSink.success(map)
+  }
+
+  @ChecksSdkIntAtLeast(api = 26)
+  fun isAtLeastO(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+  }
+
+  @ChecksSdkIntAtLeast(api = 34)
+  fun isAtLeastU(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
   }
 }

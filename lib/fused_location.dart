@@ -2,47 +2,28 @@ class FusedLocation {
   const FusedLocation({
     required this.position,
     required this.elevation,
+    required this.course,
+    required this.speed,
     required this.heading,
-    this.course,
-    this.speed,
     required this.timestamp,
   });
 
   final Position position;
   final Elevation elevation;
+  final Course course;
+  final Speed speed;
   final Heading heading;
-  final Course? course;
-  final Speed? speed;
   final DateTime timestamp;
 
-  FusedLocation.fromJson(Map<String, double> json) : this(
-    position: Position(
-      latitude: json["positionLatitude"]!,
-      longitude: json["positionLongitude"]!,
-      accuracy: json["positionAccuracy"]!,
-    ),
-    elevation: Elevation(
-      altitude: json["elevationMeanSeaLevel"]!,
-      accuracy: json["elevationMeanSeaLevelAccuracy"]!,
-    ),
-    heading: Heading(
-      direction: json["headingDirection"]!,
-      accuracy: json["headingAccuracy"]!,
-    ),
-    course: json["courseDirection"] == -1
-        ? null
-        : Course(
-            direction: json["courseDirection"]!,
-            accuracy: json["courseAccuracy"]!,
-          ),
-    speed: json["speedMagnitude"] == -1
-        ? null
-        : Speed(
-            magnitude: json["speedMagnitude"]!,
-            accuracy: json["speedAccuracy"]!,
-          ),
-    timestamp: DateTime.now(),
-  );
+  FusedLocation.fromJson(Map<String, double> json)
+    : this(
+        position: Position.fromJson(json),
+        elevation: Elevation.fromJson(json),
+        course: Course.fromJson(json),
+        speed: Speed.fromJson(json),
+        heading: Heading.fromJson(json),
+        timestamp: DateTime.now(),
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -51,18 +32,18 @@ class FusedLocation {
           runtimeType == other.runtimeType &&
           position == other.position &&
           elevation == other.elevation &&
-          heading == other.heading &&
           course == other.course &&
           speed == other.speed &&
+          heading == other.heading &&
           timestamp == other.timestamp;
 
   @override
   int get hashCode => Object.hash(
     position,
     elevation,
-    heading,
     course,
     speed,
+    heading,
     timestamp,
   );
 
@@ -71,9 +52,9 @@ class FusedLocation {
     return "FusedLocationData("
         "position: $position, "
         "elevation: $elevation, "
-        "heading: $heading, "
         "course: $course, "
         "speed: $speed, "
+        "heading: $heading, "
         "timestamp: $timestamp"
         ")";
   }
@@ -83,7 +64,7 @@ class Position {
   const Position({
     required this.latitude,
     required this.longitude,
-    required this.accuracy,
+    this.accuracy,
   });
 
   /// The latitude in degrees.
@@ -93,7 +74,14 @@ class Position {
   final double longitude;
 
   /// The radius of uncertainty for the location, measured in meters.
-  final double accuracy;
+  final double? accuracy;
+
+  Position.fromJson(Map<String, double> json)
+    : this(
+        latitude: json["positionLatitude"]!,
+        longitude: json["positionLongitude"]!,
+        accuracy: json["positionAccuracy"] == -1 ? null : json["positionAccuracy"]!,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -119,79 +107,82 @@ class Position {
 
 class Elevation {
   const Elevation({
-    required this.altitude,
-    required this.accuracy,
+    this.meanSeaLevel,
+    this.meanSeaLevelAccuracy,
+    this.ellipsoidal,
+    this.ellipsoidalAccuracy,
   });
 
   /// The altitude above mean sea level associated with a location, measured in meters.
-  final double altitude;
+  final double? meanSeaLevel;
 
-  /// The validity of the altitude values, and their estimated uncertainty, measured in meters.
-  final double accuracy;
+  /// The estimated uncertainty of the mean sea level altitude, measured in meters.
+  final double? meanSeaLevelAccuracy;
+
+  /// The altitude as a height above the World Geodetic System 1984 (WGS84) ellipsoid, measured in meters.
+  final double? ellipsoidal;
+
+  /// The estimated uncertainty of the ellipsoidal altitude, measured in meters.
+  final double? ellipsoidalAccuracy;
+
+  Elevation.fromJson(Map<String, double> json)
+    : this(
+        meanSeaLevel: json["elevationMeanSeaLevel"] == -1 ? null : json["elevationMeanSeaLevel"]!,
+        meanSeaLevelAccuracy: json["elevationMeanSeaLevelAccuracy"] == -1
+            ? null
+            : json["elevationMeanSeaLevelAccuracy"]!,
+        ellipsoidal: json["elevationEllipsoidal"] == -1 ? null : json["elevationEllipsoidal"]!,
+        ellipsoidalAccuracy: json["elevationEllipsoidalAccuracy"] == -1
+            ? null
+            : json["elevationEllipsoidalAccuracy"]!,
+      );
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Elevation &&
           runtimeType == other.runtimeType &&
-          altitude == other.altitude &&
-          accuracy == other.accuracy;
+          meanSeaLevel == other.meanSeaLevel &&
+          meanSeaLevelAccuracy == other.meanSeaLevelAccuracy &&
+          ellipsoidal == other.ellipsoidal &&
+          ellipsoidalAccuracy == other.ellipsoidalAccuracy;
 
   @override
-  int get hashCode => Object.hash(altitude, accuracy);
+  int get hashCode => Object.hash(
+    meanSeaLevel,
+    meanSeaLevelAccuracy,
+    ellipsoidal,
+    ellipsoidalAccuracy,
+  );
 
   @override
   String toString() {
     return "Elevation("
-        "altitude: $altitude, "
-        "accuracy: $accuracy"
-        ")";
-  }
-}
-
-class Heading {
-  const Heading({
-    required this.direction,
-    required this.accuracy,
-  });
-
-  /// The heading (measured in degrees) relative to true north.
-  final double direction;
-
-  /// The maximum deviation (measured in degrees) between the reported heading and the true geomagnetic heading.
-  final double accuracy;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Heading &&
-          runtimeType == other.runtimeType &&
-          direction == other.direction &&
-          accuracy == other.accuracy;
-
-  @override
-  int get hashCode => Object.hash(direction, accuracy);
-
-  @override
-  String toString() {
-    return "Heading("
-        "direction: $direction, "
-        "accuracy: $accuracy"
+        "meanSeaLevel: $meanSeaLevel, "
+        "meanSeaLevelAccuracy: $meanSeaLevelAccuracy, "
+        "ellipsoidal: $ellipsoidal, "
+        "ellipsoidalAccuracy: $ellipsoidalAccuracy"
         ")";
   }
 }
 
 class Course {
   const Course({
-    required this.direction,
-    required this.accuracy,
+    this.direction,
+    this.accuracy,
   });
 
   /// The direction in which the device is traveling, measured in degrees and relative to due north.
-  final double direction;
+  final double? direction;
 
   /// The accuracy of the course value, measured in degrees.
-  final double accuracy;
+  final double? accuracy;
+
+  Course.fromJson(Map<String, double> json)
+    : this(
+        direction: json["courseDirection"] == -1 ? null : json["courseDirection"]!,
+        accuracy: json["courseAccuracy"] == -1 ? null : json["courseAccuracy"]!,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -215,15 +206,21 @@ class Course {
 
 class Speed {
   const Speed({
-    required this.magnitude,
-    required this.accuracy,
+    this.magnitude,
+    this.accuracy,
   });
 
   /// The instantaneous speed of the device, measured in meters per second.
-  final double magnitude;
+  final double? magnitude;
 
   /// The accuracy of the speed value, measured in meters per second.
-  final double accuracy;
+  final double? accuracy;
+
+  Speed.fromJson(Map<String, double> json)
+    : this(
+        magnitude: json["speedMagnitude"] == -1 ? null : json["speedMagnitude"]!,
+        accuracy: json["speedAccuracy"] == -1 ? null : json["speedAccuracy"]!,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -240,6 +237,44 @@ class Speed {
   String toString() {
     return "Speed("
         "speed: $magnitude, "
+        "accuracy: $accuracy"
+        ")";
+  }
+}
+
+class Heading {
+  const Heading({
+    required this.direction,
+    required this.accuracy,
+  });
+
+  /// The heading (measured in degrees) relative to true north.
+  final double direction;
+
+  /// The maximum deviation (measured in degrees) between the reported heading and the true geomagnetic heading.
+  final double accuracy;
+
+  Heading.fromJson(Map<String, double> json)
+    : this(
+        direction: json["headingDirection"]!,
+        accuracy: json["headingAccuracy"]!,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Heading &&
+          runtimeType == other.runtimeType &&
+          direction == other.direction &&
+          accuracy == other.accuracy;
+
+  @override
+  int get hashCode => Object.hash(direction, accuracy);
+
+  @override
+  String toString() {
+    return "Heading("
+        "direction: $direction, "
         "accuracy: $accuracy"
         ")";
   }

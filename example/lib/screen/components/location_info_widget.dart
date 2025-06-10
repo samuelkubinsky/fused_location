@@ -23,9 +23,20 @@ class LocationInfoWidget extends StatelessWidget {
             color: Colors.blue,
             isAvailable: true,
             children: [
-              _buildInfoRow("Latitude", "${location.position.latitude.toStringAsFixed(6)}°"),
-              _buildInfoRow("Longitude", "${location.position.longitude.toStringAsFixed(6)}°"),
-              _buildInfoRow("Accuracy", "±${location.position.accuracy.toStringAsFixed(1)}m"),
+              _buildInfoRow(
+                "Latitude",
+                "${location.position.latitude.toStringAsFixed(6)}°",
+              ),
+              _buildInfoRow(
+                "Longitude",
+                "${location.position.longitude.toStringAsFixed(6)}°",
+              ),
+              _buildInfoRow(
+                "Accuracy",
+                location.position.accuracy != null
+                    ? "±${location.position.accuracy!.toStringAsFixed(1)}m"
+                    : "N/A",
+              ),
             ],
           ),
 
@@ -37,10 +48,32 @@ class LocationInfoWidget extends StatelessWidget {
             icon: Icons.terrain,
             title: "Elevation",
             color: Colors.green,
-            isAvailable: true,
+            isAvailable: _hasElevationData(),
             children: [
-              _buildInfoRow("Altitude", "${location.elevation.altitude.toStringAsFixed(1)}m"),
-              _buildInfoRow("Accuracy", "±${location.elevation.accuracy.toStringAsFixed(1)}m"),
+              _buildInfoRow(
+                "Mean Sea Level",
+                location.elevation.meanSeaLevel != null
+                    ? "${location.elevation.meanSeaLevel!.toStringAsFixed(1)}m"
+                    : "N/A",
+              ),
+              _buildInfoRow(
+                "Mean Sea Level Accuracy",
+                location.elevation.meanSeaLevelAccuracy != null
+                    ? "±${location.elevation.meanSeaLevelAccuracy!.toStringAsFixed(1)}m"
+                    : "N/A",
+              ),
+              _buildInfoRow(
+                "Ellipsoidal",
+                location.elevation.ellipsoidal != null
+                    ? "${location.elevation.ellipsoidal!.toStringAsFixed(1)}m"
+                    : "N/A",
+              ),
+              _buildInfoRow(
+                "Ellipsoidal Accuracy",
+                location.elevation.ellipsoidalAccuracy != null
+                    ? "±${location.elevation.ellipsoidalAccuracy!.toStringAsFixed(1)}m"
+                    : "N/A",
+              ),
             ],
           ),
 
@@ -52,10 +85,16 @@ class LocationInfoWidget extends StatelessWidget {
             icon: Icons.explore,
             title: "Heading",
             color: Colors.orange,
-            isAvailable: true,
+            isAvailable: true, // Heading is always available based on your model
             children: [
-              _buildInfoRow("Direction", "${location.heading.direction.toStringAsFixed(1)}°"),
-              _buildInfoRow("Accuracy", "±${location.heading.accuracy.toStringAsFixed(1)}°"),
+              _buildInfoRow(
+                "Direction",
+                "${location.heading.direction.toStringAsFixed(1)}°",
+              ),
+              _buildInfoRow(
+                "Accuracy",
+                "±${location.heading.accuracy.toStringAsFixed(1)}°",
+              ),
             ],
           ),
 
@@ -67,10 +106,20 @@ class LocationInfoWidget extends StatelessWidget {
             icon: Icons.navigation,
             title: "Course",
             color: Colors.purple,
-            isAvailable: location.course != null,
+            isAvailable: _hasCourseData(),
             children: [
-              _buildInfoRow("Direction", "${location.course?.direction.toStringAsFixed(1)}°"),
-              _buildInfoRow("Accuracy", "±${location.course?.accuracy.toStringAsFixed(1)}°"),
+              _buildInfoRow(
+                "Direction",
+                location.course.direction != null
+                    ? "${location.course.direction!.toStringAsFixed(1)}°"
+                    : "N/A",
+              ),
+              _buildInfoRow(
+                "Accuracy",
+                location.course.accuracy != null
+                    ? "±${location.course.accuracy!.toStringAsFixed(1)}°"
+                    : "N/A",
+              ),
             ],
           ),
 
@@ -82,10 +131,20 @@ class LocationInfoWidget extends StatelessWidget {
             icon: Icons.speed,
             title: "Speed",
             color: Colors.red,
-            isAvailable: location.speed != null,
+            isAvailable: _hasSpeedData(),
             children: [
-              _buildInfoRow("Speed", "${location.speed?.magnitude.toStringAsFixed(2)} m/s"),
-              _buildInfoRow("Accuracy", "±${location.speed?.accuracy.toStringAsFixed(2)} m/s"),
+              _buildInfoRow(
+                "Magnitude",
+                location.speed.magnitude != null
+                    ? "${location.speed.magnitude!.toStringAsFixed(2)} m/s"
+                    : "N/A",
+              ),
+              _buildInfoRow(
+                "Accuracy",
+                location.speed.accuracy != null
+                    ? "±${location.speed.accuracy!.toStringAsFixed(2)} m/s"
+                    : "N/A",
+              ),
             ],
           ),
 
@@ -99,7 +158,10 @@ class LocationInfoWidget extends StatelessWidget {
             color: Colors.grey,
             isAvailable: true,
             children: [
-              _buildInfoRow("Last Updated", location.timestamp.toIso8601String()),
+              _buildInfoRow(
+                "Last Updated",
+                location.timestamp.toIso8601String(),
+              ),
             ],
           ),
 
@@ -107,6 +169,19 @@ class LocationInfoWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // Helper methods to check data availability
+  bool _hasElevationData() {
+    return location.elevation.meanSeaLevel != null || location.elevation.ellipsoidal != null;
+  }
+
+  bool _hasCourseData() {
+    return location.course.direction != null || location.course.accuracy != null;
+  }
+
+  bool _hasSpeedData() {
+    return location.speed.magnitude != null || location.speed.accuracy != null;
   }
 
   Widget _buildSectionCard(
@@ -139,6 +214,24 @@ class LocationInfoWidget extends StatelessWidget {
                     color: isAvailable ? color[700] : Colors.grey[400],
                   ),
                 ),
+                if (!isAvailable) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      "Unavailable",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 12),
@@ -150,6 +243,8 @@ class LocationInfoWidget extends StatelessWidget {
   }
 
   Widget _buildInfoRow(String label, String value) {
+    final isUnavailable = value == "N/A";
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -157,16 +252,17 @@ class LocationInfoWidget extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: isUnavailable ? Colors.grey[400] : Colors.grey[600],
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
+              color: isUnavailable ? Colors.grey[400] : Colors.black87,
             ),
           ),
         ],
