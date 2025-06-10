@@ -10,7 +10,9 @@ class FusedLocationProvider {
     return _instance.dataStream;
   }
 
-  Future<void> startLocationUpdates({required FusedLocationProviderOptions options}) {
+  Future<void> startLocationUpdates({
+    required FusedLocationProviderOptions options,
+  }) {
     return _instance.startLocationUpdates(options: options);
   }
 

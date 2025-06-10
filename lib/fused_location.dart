@@ -80,7 +80,9 @@ class Position {
     : this(
         latitude: json["positionLatitude"]!,
         longitude: json["positionLongitude"]!,
-        accuracy: json["positionAccuracy"] == -1 ? null : json["positionAccuracy"]!,
+        accuracy: json["positionAccuracy"] == -1
+            ? null
+            : json["positionAccuracy"]!,
       );
 
   @override
@@ -93,7 +95,11 @@ class Position {
           accuracy == other.accuracy;
 
   @override
-  int get hashCode => Object.hash(latitude, longitude, accuracy);
+  int get hashCode => Object.hash(
+    latitude,
+    longitude,
+    accuracy,
+  );
 
   @override
   String toString() {
@@ -113,13 +119,16 @@ class Elevation {
     this.ellipsoidalAccuracy,
   });
 
-  /// The altitude above mean sea level associated with a location, measured in meters.
+  /// The altitude above mean sea level associated with a location,
+  /// measured in meters.
   final double? meanSeaLevel;
 
-  /// The estimated uncertainty of the mean sea level altitude, measured in meters.
+  /// The estimated uncertainty of the mean sea level altitude,
+  /// measured in meters.
   final double? meanSeaLevelAccuracy;
 
-  /// The altitude as a height above the World Geodetic System 1984 (WGS84) ellipsoid, measured in meters.
+  /// The altitude as a height above the World Geodetic System 1984 (WGS84)
+  /// ellipsoid, measured in meters.
   final double? ellipsoidal;
 
   /// The estimated uncertainty of the ellipsoidal altitude, measured in meters.
@@ -127,11 +136,15 @@ class Elevation {
 
   Elevation.fromJson(Map<String, double> json)
     : this(
-        meanSeaLevel: json["elevationMeanSeaLevel"] == -1 ? null : json["elevationMeanSeaLevel"]!,
+        meanSeaLevel: json["elevationMeanSeaLevel"] == -1
+            ? null
+            : json["elevationMeanSeaLevel"]!,
         meanSeaLevelAccuracy: json["elevationMeanSeaLevelAccuracy"] == -1
             ? null
             : json["elevationMeanSeaLevelAccuracy"]!,
-        ellipsoidal: json["elevationEllipsoidal"] == -1 ? null : json["elevationEllipsoidal"]!,
+        ellipsoidal: json["elevationEllipsoidal"] == -1
+            ? null
+            : json["elevationEllipsoidal"]!,
         ellipsoidalAccuracy: json["elevationEllipsoidalAccuracy"] == -1
             ? null
             : json["elevationEllipsoidalAccuracy"]!,
@@ -172,7 +185,8 @@ class Course {
     this.accuracy,
   });
 
-  /// The direction in which the device is traveling, measured in degrees and relative to due north.
+  /// The direction in which the device is traveling, measured in degrees
+  /// and relative to due north.
   final double? direction;
 
   /// The accuracy of the course value, measured in degrees.
@@ -180,7 +194,9 @@ class Course {
 
   Course.fromJson(Map<String, double> json)
     : this(
-        direction: json["courseDirection"] == -1 ? null : json["courseDirection"]!,
+        direction: json["courseDirection"] == -1
+            ? null
+            : json["courseDirection"]!,
         accuracy: json["courseAccuracy"] == -1 ? null : json["courseAccuracy"]!,
       );
 
@@ -193,7 +209,10 @@ class Course {
           accuracy == other.accuracy;
 
   @override
-  int get hashCode => Object.hash(direction, accuracy);
+  int get hashCode => Object.hash(
+    direction,
+    accuracy,
+  );
 
   @override
   String toString() {
@@ -218,7 +237,9 @@ class Speed {
 
   Speed.fromJson(Map<String, double> json)
     : this(
-        magnitude: json["speedMagnitude"] == -1 ? null : json["speedMagnitude"]!,
+        magnitude: json["speedMagnitude"] == -1
+            ? null
+            : json["speedMagnitude"]!,
         accuracy: json["speedAccuracy"] == -1 ? null : json["speedAccuracy"]!,
       );
 
@@ -231,7 +252,10 @@ class Speed {
           accuracy == other.accuracy;
 
   @override
-  int get hashCode => Object.hash(magnitude, accuracy);
+  int get hashCode => Object.hash(
+    magnitude,
+    accuracy,
+  );
 
   @override
   String toString() {
@@ -251,7 +275,8 @@ class Heading {
   /// The heading (measured in degrees) relative to true north.
   final double direction;
 
-  /// The maximum deviation (measured in degrees) between the reported heading and the true geomagnetic heading.
+  /// The maximum deviation (measured in degrees) between the reported heading
+  /// and the true geomagnetic heading.
   final double accuracy;
 
   Heading.fromJson(Map<String, double> json)
@@ -269,7 +294,10 @@ class Heading {
           accuracy == other.accuracy;
 
   @override
-  int get hashCode => Object.hash(direction, accuracy);
+  int get hashCode => Object.hash(
+    direction,
+    accuracy,
+  );
 
   @override
   String toString() {

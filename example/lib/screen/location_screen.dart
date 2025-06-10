@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:fused_location/fused_location.dart";
+import "package:fused_location_example/app.dart";
 import "package:fused_location_example/screen/components/location_info_widget.dart";
 import "package:fused_location_example/screen/cubit/location_cubit.dart";
 
@@ -14,8 +15,8 @@ class LocationScreen extends StatelessWidget {
       child: BlocBuilder<LocationCubit, LocationState>(
         builder: (context, state) {
           return switch (state) {
-            InitialState() => _buildText(context, "Press button to start location updates"),
-            ErrorState(:final message) => _buildText(context, message),
+            InitialState() => _buildInitial(context),
+            ErrorState(:final message) => _buildError(context, message),
             SuccessState(:final location) => _buildSuccess(context, location),
           };
         },
@@ -23,9 +24,18 @@ class LocationScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildInitial(BuildContext context) {
+    return _buildText(context, "Press button to start location updates");
+  }
+
+  Widget _buildError(BuildContext context, String message) {
+    return _buildText(context, message);
+  }
+
   Widget _buildText(BuildContext context, String text) {
     final appBar = AppBar(
-      title: const Text("Fused Location"),
+      centerTitle: true,
+      title: const Text(kAppName),
     );
 
     final fab = FloatingActionButton(
@@ -48,7 +58,8 @@ class LocationScreen extends StatelessWidget {
 
   Widget _buildSuccess(BuildContext context, FusedLocation location) {
     final appBar = AppBar(
-      title: const Text("Fused Location"),
+      centerTitle: true,
+      title: const Text(kAppName),
     );
 
     final fab = FloatingActionButton(

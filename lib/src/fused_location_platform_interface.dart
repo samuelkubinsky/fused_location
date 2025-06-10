@@ -9,7 +9,8 @@ abstract class FusedLocationPlatformInterface extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FusedLocationPlatformInterface _instance = FusedLocationMethodChannel();
+  static FusedLocationPlatformInterface _instance =
+      FusedLocationMethodChannel();
 
   /// The default instance of [FusedLocationPlatformInterface] to use.
   ///
@@ -25,14 +26,22 @@ abstract class FusedLocationPlatformInterface extends PlatformInterface {
   }
 
   Stream<FusedLocation> get dataStream {
-    throw UnimplementedError("dataStream has not been implemented.");
+    throw UnimplementedError(
+      "dataStream has not been implemented.",
+    );
   }
 
-  Future<void> startLocationUpdates({required FusedLocationProviderOptions options}) {
-    throw UnimplementedError("startLocationUpdates() has not been implemented.");
+  Future<void> startLocationUpdates({
+    required FusedLocationProviderOptions options,
+  }) {
+    throw UnimplementedError(
+      "startLocationUpdates() has not been implemented.",
+    );
   }
 
   Future<void> stopLocationUpdates() {
-    throw UnimplementedError("stopLocationUpdates() has not been implemented.");
+    throw UnimplementedError(
+      "stopLocationUpdates() has not been implemented.",
+    );
   }
 }

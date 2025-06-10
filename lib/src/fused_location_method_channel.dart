@@ -5,7 +5,8 @@ import "package:fused_location/fused_location_options.dart";
 
 import "fused_location_platform_interface.dart";
 
-/// An implementation of [FusedLocationPlatformInterface] that uses method channels.
+/// An implementation of [FusedLocationPlatformInterface] that uses
+/// method channels.
 class FusedLocationMethodChannel extends FusedLocationPlatformInterface {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
@@ -18,18 +19,27 @@ class FusedLocationMethodChannel extends FusedLocationPlatformInterface {
 
   @override
   Stream<FusedLocation> get dataStream {
-    _dataStream ??= eventChannel.receiveBroadcastStream().map(parseNativeStreamData);
+    _dataStream ??= eventChannel.receiveBroadcastStream().map(
+      parseNativeStreamData,
+    );
     return _dataStream!;
   }
 
   @override
-  Future<void> startLocationUpdates({required FusedLocationProviderOptions options}) {
-    return methodChannel.invokeMethod<void>("startLocationUpdates", options.toJson());
+  Future<void> startLocationUpdates({
+    required FusedLocationProviderOptions options,
+  }) {
+    return methodChannel.invokeMethod<void>(
+      "startLocationUpdates",
+      options.toJson(),
+    );
   }
 
   @override
   Future<void> stopLocationUpdates() {
-    return methodChannel.invokeMethod<void>("stopLocationUpdates");
+    return methodChannel.invokeMethod<void>(
+      "stopLocationUpdates",
+    );
   }
 
   FusedLocation parseNativeStreamData(dynamic data) {
