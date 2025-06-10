@@ -7,7 +7,7 @@ class FusedLocationProviderOptions {
     required this.distanceFilter,
   });
 
-  Map<String, dynamic> toJson() {
+  Map<String, double> toJson() {
     return {
       "distanceFilter": distanceFilter,
     };

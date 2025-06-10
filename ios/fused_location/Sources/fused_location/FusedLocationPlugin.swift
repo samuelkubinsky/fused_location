@@ -83,21 +83,21 @@ public class FusedLocationPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             return
         }
         
-        let list = [
-            lastLocation.coordinate.latitude,
-            lastLocation.coordinate.longitude,
-            lastLocation.horizontalAccuracy,
-            lastLocation.altitude,
-            lastLocation.verticalAccuracy,
-            lastHeading.trueHeading,
-            lastHeading.headingAccuracy,
-            lastLocation.course,
-            lastLocation.courseAccuracy,
-            lastLocation.speed,
-            lastLocation.speedAccuracy
+        let dict = [
+            "positionLatitude": lastLocation.coordinate.latitude,
+            "positionLongitude": lastLocation.coordinate.longitude,
+            "positionAccuracy": lastLocation.horizontalAccuracy,
+            "elevationMeanSeaLevel": lastLocation.altitude,
+            "elevationMeanSeaLevelAccuracy": lastLocation.verticalAccuracy,
+            "headingDirection": lastHeading.trueHeading,
+            "headingAccuracy": lastHeading.headingAccuracy,
+            "courseDirection": lastLocation.course,
+            "courseAccuracy": lastLocation.courseAccuracy,
+            "speedMagnitude": lastLocation.speed,
+            "speedAccuracy": lastLocation.speedAccuracy
         ]
         
-        eventSink(list)
+        eventSink(dict)
     }
 }
 

@@ -99,9 +99,11 @@ class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
 
   @SuppressLint("MissingPermission")
   private fun startLocationUpdates(distanceFilter: Float?) {
+    stopLocationUpdates()
+
     val distanceFilter = distanceFilter ?: 0f
 
-    val locationCallback = object : LocationCallback() {
+    locationCallback = object : LocationCallback() {
       override fun onLocationResult(result: LocationResult) {
         result.lastLocation?.let { location ->
           lastLocation = location
@@ -124,19 +126,21 @@ class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
 
     locationProviderClient.requestLocationUpdates(
       locationRequest,
-      locationCallback,
+      locationCallback!!,
       looper
     )
   }
 
   private fun startOrientationUpdates() {
+    stopOrientationUpdates()
+
     val request = DeviceOrientationRequest.Builder(
       DeviceOrientationRequest.OUTPUT_PERIOD_DEFAULT
     ).build()
 
     val executor = ContextCompat.getMainExecutor(context)
 
-    val orientationListener = DeviceOrientationListener { orientation ->
+    orientationListener = DeviceOrientationListener { orientation ->
       val shouldUpdate = lastOrientation?.let { last ->
         abs(last.headingDegrees - orientation.headingDegrees) > 1
       } ?: true
@@ -150,7 +154,7 @@ class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
     orientationProviderClient.requestOrientationUpdates(
       request,
       executor,
-      orientationListener
+      orientationListener!!
     )
   }
 
@@ -173,20 +177,20 @@ class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
     val lastLocation = lastLocation ?: return
     val lastOrientation = lastOrientation ?: return
 
-    val list = listOf(
-      lastLocation.latitude,
-      lastLocation.longitude,
-      lastLocation.accuracy.toDouble(),
-      lastLocation.altitude,
-      lastLocation.verticalAccuracyMeters.toDouble(),
-      lastOrientation.headingDegrees.toDouble(),
-      lastOrientation.headingErrorDegrees.toDouble(),
-      if (lastLocation.hasBearing()) lastLocation.bearing.toDouble() else -1.0,
-      if (lastLocation.hasBearingAccuracy()) lastLocation.bearingAccuracyDegrees.toDouble() else -1.0,
-      if (lastLocation.hasSpeed()) lastLocation.speed.toDouble() else -1.0,
-      if (lastLocation.hasSpeedAccuracy()) lastLocation.speedAccuracyMetersPerSecond.toDouble() else -1.0
+    val dict = mapOf(
+      "positionLatitude" to lastLocation.latitude,
+      "positionLongitude" to lastLocation.longitude,
+      "positionAccuracy" to lastLocation.accuracy.toDouble(),
+      "elevationMeanSeaLevel" to lastLocation.altitude,
+      "elevationMeanSeaLevelAccuracy" to lastLocation.verticalAccuracyMeters.toDouble(),
+      "headingDirection" to lastOrientation.headingDegrees.toDouble(),
+      "headingAccuracy" to lastOrientation.headingErrorDegrees.toDouble(),
+      "courseDirection" to if (lastLocation.hasBearing()) lastLocation.bearing.toDouble() else -1.0,
+      "courseAccuracy" to if (lastLocation.hasBearingAccuracy()) lastLocation.bearingAccuracyDegrees.toDouble() else -1.0,
+      "speedMagnitude" to if (lastLocation.hasSpeed()) lastLocation.speed.toDouble() else -1.0,
+      "speedAccuracy" to if (lastLocation.hasSpeedAccuracy()) lastLocation.speedAccuracyMetersPerSecond.toDouble() else -1.0
     )
 
-    eventSink.success(list)
+    eventSink.success(dict)
   }
 }

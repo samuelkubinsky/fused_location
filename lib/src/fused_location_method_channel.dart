@@ -33,55 +33,10 @@ class FusedLocationMethodChannel extends FusedLocationPlatformInterface {
   }
 
   FusedLocation parseNativeStreamData(dynamic data) {
-    if (data is! List) {
-      throw ArgumentError("Expected list, got ${data.runtimeType}");
+    if (data is! Map) {
+      throw ArgumentError("Expected map, got ${data.runtimeType}");
     }
-
-    final list = data.cast<double>();
-
-    if (list.length != 11) {
-      throw ArgumentError("Expected 11 values in data list, got ${list.length}");
-    }
-
-    final position = Position(
-      latitude: list[0],
-      longitude: list[1],
-      accuracy: list[2],
-    );
-
-    final elevation = Elevation(
-      altitude: list[3],
-      accuracy: list[4],
-    );
-
-    final heading = Heading(
-      direction: list[5],
-      accuracy: list[6],
-    );
-
-    final course = list[7] == -1
-        ? null
-        : Course(
-            direction: list[7],
-            accuracy: list[8],
-          );
-
-    final speed = list[9] == -1
-        ? null
-        : Speed(
-            magnitude: list[9],
-            accuracy: list[10],
-          );
-
-    final timestamp = DateTime.now();
-
-    return FusedLocation(
-      position: position,
-      elevation: elevation,
-      heading: heading,
-      course: course,
-      speed: speed,
-      timestamp: timestamp,
-    );
+    final map = data.cast<String, double>();
+    return FusedLocation.fromJson(map);
   }
 }

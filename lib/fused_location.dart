@@ -15,6 +15,35 @@ class FusedLocation {
   final Speed? speed;
   final DateTime timestamp;
 
+  FusedLocation.fromJson(Map<String, double> json) : this(
+    position: Position(
+      latitude: json["positionLatitude"]!,
+      longitude: json["positionLongitude"]!,
+      accuracy: json["positionAccuracy"]!,
+    ),
+    elevation: Elevation(
+      altitude: json["elevationMeanSeaLevel"]!,
+      accuracy: json["elevationMeanSeaLevelAccuracy"]!,
+    ),
+    heading: Heading(
+      direction: json["headingDirection"]!,
+      accuracy: json["headingAccuracy"]!,
+    ),
+    course: json["courseDirection"] == -1
+        ? null
+        : Course(
+            direction: json["courseDirection"]!,
+            accuracy: json["courseAccuracy"]!,
+          ),
+    speed: json["speedMagnitude"] == -1
+        ? null
+        : Speed(
+            magnitude: json["speedMagnitude"]!,
+            accuracy: json["speedAccuracy"]!,
+          ),
+    timestamp: DateTime.now(),
+  );
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
