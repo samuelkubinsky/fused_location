@@ -1,4 +1,26 @@
 include: package:flutter_lints/flutter.yaml
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    - require_trailing_commas
+    - always_declare_return_types
+    - prefer_double_quotes
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - prefer_constructors_over_static_methods
+    - prefer_final_locals
+    - prefer_final_fields
+    - prefer_final_in_for_each
+    - prefer_contains
+    - prefer_function_declarations_over_variables
+    - prefer_is_not_operator
+    - prefer_null_aware_operators
+    - prefer_null_aware_method_calls
+    - prefer_spread_collections
+    - prefer_void_to_null
+    - prefer_inlined_adds
+
+formatter:
+  trailing_commas: preserve
