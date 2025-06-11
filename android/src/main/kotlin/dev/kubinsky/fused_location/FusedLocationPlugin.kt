@@ -228,6 +228,7 @@ class FusedLocationPlugin: FlutterPlugin, MethodCallHandler, StreamHandler {
     val headingDirection = orientation.headingDegrees.toDouble()
     val headingAccuracy = orientation.headingErrorDegrees.toDouble()
 
+    // result
     val map = mapOf<String, Double>(
       "positionLatitude" to positionLatitude,
       "positionLongitude" to positionLongitude,

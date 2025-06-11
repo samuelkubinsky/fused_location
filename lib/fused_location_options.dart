@@ -1,11 +1,11 @@
 class FusedLocationProviderOptions {
-  /// The minimum distance in meters the device must move horizontally
-  /// before an update event is generated.
-  final double distanceFilter;
-
   const FusedLocationProviderOptions({
     required this.distanceFilter,
   });
+
+  /// The minimum distance in meters the device must move horizontally
+  /// before an update event is generated.
+  final double distanceFilter;
 
   Map<String, double> toJson() {
     return {

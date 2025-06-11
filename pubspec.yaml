@@ -1,6 +1,6 @@
 name: fused_location
-description: "A new Flutter plugin project."
-version: 0.0.1
+description: "A Flutter plugin for high-accuracy location and orientation data, leveraging advanced native APIs."
+version: 0.8.0
 homepage:
 
 environment:

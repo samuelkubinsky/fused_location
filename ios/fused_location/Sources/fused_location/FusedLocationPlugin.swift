@@ -114,7 +114,7 @@ public class FusedLocationPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         let headingDirection = heading.trueHeading
         let headingAccuracy = heading.headingAccuracy
         
-        
+        // result
         let dict: [String: Double] = [
             "positionLatitude": positionLatitude,
             "positionLongitude": positionLongitude,
