@@ -1,6 +1,6 @@
 # 📍 Fused Location
 
-This package designed to give you rich, detailed information about your device's position and movement. We focus on delivering location data, letting other tools handle permissions.
+This package is designed to give you rich, detailed information about your device's position and movement. We focus on delivering location data, letting other tools handle permissions.
 
 ## ✨ Why Choose This Plugin?
 
