@@ -1,7 +1,13 @@
 name: fused_location
 description: "A Flutter plugin for high-accuracy location and orientation data, leveraging advanced native APIs."
 version: 0.8.0
-homepage:
+repository: https://github.com/samuelkubinsky/fused_location
+topics:
+  - location
+  - sensor
+  - geospatial
+  - map
+  - navigation
 
 environment:
   sdk: ^3.8.1
